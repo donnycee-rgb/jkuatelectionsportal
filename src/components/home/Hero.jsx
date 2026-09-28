@@ -1,7 +1,10 @@
 import HeroCarousel from './HeroCarousel.jsx';
+import TypeText from './TypeText.jsx';
 import { PHOTOS } from '../../config/photos.js';
 import { useNavigate } from '../../hooks/useRoute.js';
 
+// Full-bleed photographic hero: the carousel fills the section as its
+// background, with the copy centred over a dark overlay.
 export default function Hero() {
   const navigate = useNavigate();
   return (
@@ -26,16 +29,16 @@ export default function Hero() {
             Shape the next chapter of the JKUAT French Club.
           </h1>
 
-          <p className="hero-body">
-            The JKUAT French Club invites eligible members to apply for executive leadership positions for the
-            2026/2027 academic year.
-          </p>
+          <TypeText
+            className="hero-body"
+            text="The JKUAT French Club invites eligible members to apply for executive leadership positions for the 2026/2027 academic year."
+          />
 
           <div className="hero-actions">
             <a className="btn btn--primary btn--lg" href="#/apply" onClick={(e) => { e.preventDefault(); navigate('/apply'); }}>
               Apply for a position
             </a>
-            <a className="btn btn--ghost btn--lg" href="#/?s=positions" onClick={(e) => { e.preventDefault(); navigate('/', 'positions'); }}>
+            <a className="btn btn--outline-light btn--lg" href="#/?s=positions" onClick={(e) => { e.preventDefault(); navigate('/', 'positions'); }}>
               View executive positions
             </a>
           </div>

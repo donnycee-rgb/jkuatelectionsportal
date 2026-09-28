@@ -14,7 +14,7 @@
   top: 0;
   z-index: 50;
   padding-top: env(safe-area-inset-top, 0px);
-  background: rgba(255, 255, 255, 0.97);
+  background: var(--header-bg);
   border-bottom: 1px solid transparent;
   transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
@@ -28,12 +28,17 @@
 .brand-name { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; letter-spacing: 0.005em; }
 .brand-sub { font-size: var(--fs-xs); color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.menu-toggle {
+.header-tools { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+.menu-toggle, .theme-toggle {
   display: inline-grid; place-items: center;
   width: 48px; height: 48px;
   border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--white); cursor: pointer; flex: none;
+  background: var(--white); color: var(--ink); cursor: pointer; flex: none;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
+.theme-toggle:hover { border-color: var(--blue); color: var(--blue); }
+.theme-toggle svg { transition: transform 500ms var(--ease-out); }
+.theme-toggle:hover svg { transform: rotate(-20deg); }
 
 .site-nav {
   position: fixed;
@@ -61,6 +66,9 @@
 
 @media (min-width: 960px) {
   .menu-toggle, .nav-scrim { display: none; }
+  .header-tools { order: 2; margin-left: 0; }
+  .theme-toggle { width: 42px; height: 42px; border-color: transparent; }
+  .site-nav { margin-left: auto; }
   .site-nav {
     position: static; transform: none; opacity: 1; visibility: visible;
     padding: 0; border: 0; background: none;

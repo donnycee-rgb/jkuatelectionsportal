@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="Official Executive Leadership Application Portal of the JKUAT French Club for the 2026/2027 academic year." />
     <meta name="theme-color" content="#054AAB" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Apply a saved light/dark choice before first paint (no flash).
+      try { var t = localStorage.getItem('jfc-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+    </script>
     <link rel="icon" type="image/png" href="./favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
