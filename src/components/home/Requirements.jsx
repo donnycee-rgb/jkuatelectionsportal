@@ -1,7 +1,7 @@
 import SectionHead from '../common/SectionHead.jsx';
 import Reveal from '../common/Reveal.jsx';
 import Photo from '../common/Photo.jsx';
-import { PHOTOS } from '../../config/photos.js';
+import { PHOTOS, SHOW_EXPERIENCE } from '../../config/photos.js';
 import { IconCheck } from '../common/Icons.jsx';
 
 const ITEMS = [
@@ -16,12 +16,14 @@ const ITEMS = [
 export default function Requirements() {
   return (
     <section id="requirements" className="section section--white" aria-labelledby="requirements-title">
-      <div className="container split split--image-text split--req">
-        <Reveal variant="image" className="split-media split-media--sticky">
-          <Photo photo={PHOTOS.requirements} className="photo--tall" sizes="(min-width: 900px) 38vw, 100vw" />
-        </Reveal>
+      <div className={`container split split--image-text split--req ${PHOTOS.requirements ? '' : 'split--solo'}`}>
+        {PHOTOS.requirements && (
+          <Reveal variant="image" className="split-media split-media--sticky">
+            <Photo photo={PHOTOS.requirements} className="photo--tall" sizes="(min-width: 900px) 38vw, 100vw" />
+          </Reveal>
+        )}
         <div className="split-text">
-          <SectionHead id="requirements-title" index="05" eyebrow="Requirements" title="Who should apply?" />
+          <SectionHead id="requirements-title" index={SHOW_EXPERIENCE ? '05' : '04'} eyebrow="Requirements" title="Who should apply?" />
           <Reveal as="ul" className="req-list">
             {ITEMS.map((item, i) => (
               <li key={item.text} className="req-item" style={{ '--i': i }}>

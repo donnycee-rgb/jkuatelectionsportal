@@ -8,10 +8,12 @@ import { IconArrowRight } from '../common/Icons.jsx';
 export default function Positions() {
   return (
     <section id="positions" className="section section--soft" aria-labelledby="positions-title">
-      <div className="container split split--image-text split--wide-list">
-        <Reveal variant="image" className="split-media split-media--sticky">
-          <Photo photo={PHOTOS.positions} className="photo--portrait" sizes="(min-width: 900px) 40vw, 100vw" />
-        </Reveal>
+      <div className={`container split split--image-text split--wide-list ${PHOTOS.positions ? '' : 'split--solo'}`}>
+        {PHOTOS.positions && (
+          <Reveal variant="image" className="split-media split-media--sticky">
+            <Photo photo={PHOTOS.positions} className="photo--portrait" sizes="(min-width: 900px) 40vw, 100vw" />
+          </Reveal>
+        )}
 
         <div className="split-text">
           <SectionHead

@@ -7,8 +7,8 @@ import { IconArrowRight } from '../common/Icons.jsx';
 export default function ApplyBand() {
   const navigate = useNavigate();
   return (
-    <section className="apply-band" aria-labelledby="band-title">
-      <Photo photo={PHOTOS.cta} className="apply-band-photo" sizes="100vw" />
+    <section className={`apply-band ${PHOTOS.cta ? '' : 'apply-band--plain'}`} aria-labelledby="band-title">
+      {PHOTOS.cta && <Photo photo={PHOTOS.cta} className="apply-band-photo" sizes="100vw" />}
       <div className="container apply-band-inner">
         <Reveal className="apply-band-copy">
           <p className="eyebrow eyebrow--light">Ready to serve?</p>

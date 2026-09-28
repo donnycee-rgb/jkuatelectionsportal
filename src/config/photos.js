@@ -9,11 +9,14 @@
 //   3. Adjust `position` (CSS object-position) if a crop cuts off faces.
 //   4. `caption` stays null unless the event, date or place is confirmed.
 //
-// Use only real club photographs. No stock, AI-generated or illustrative
-// images. A slot whose file is missing renders a plain neutral panel, so the
-// layout holds until the photograph is supplied.
-//
+// A slot set to null is left out: its section switches to a text-only
+// layout. A slot whose file is missing renders a plain neutral panel.
 // Each photograph should appear in one slot only.
+//
+// CURRENT IMAGES ARE PLACEHOLDERS. They are general images, not photographs
+// of the JKUAT French Club, so their alt text describes only what is shown
+// and no captions are used. Replace them with real club photographs as soon
+// as they are available, and fill the null slots at the same time.
 
 const photo = (file, alt, position = '50% 50%', caption = null) => ({
   src: `./photos/${file}`,
@@ -25,36 +28,33 @@ const photo = (file, alt, position = '50% 50%', caption = null) => ({
 export const PHOTOS = {
   // Homepage hero carousel: 4 to 6 photographs, landscape works best.
   hero: [
-    photo('hero-1.jpg', 'Members of the JKUAT French Club together at a club gathering', '50% 40%'),
-    photo('hero-2.jpg', 'Students taking part in a JKUAT French Club activity', '50% 45%'),
-    photo('hero-3.jpg', 'Club members in conversation during a French Club session', '50% 40%'),
-    photo('hero-4.jpg', 'JKUAT French Club members at a cultural event', '50% 45%'),
-    photo('hero-5.jpg', 'A group photograph of JKUAT French Club members', '50% 35%'),
+    photo('team-hands.webp', 'A group of people standing in a circle with their hands stacked together in the centre', '50% 50%'),
+    photo('vive-la-france.webp', "A blue, white and red balloon arch above a banner reading 'Vive la France!' with two Eiffel Tower motifs", '50% 55%'),
+    photo('leadership-silhouettes.png', 'Silhouettes of people in business dress standing together, in blue tones', '50% 60%'),
   ],
 
   // "The election" section: one strong horizontal photograph.
-  election: photo('election.jpg', 'JKUAT French Club members gathered for a club meeting', '50% 45%'),
+  election: photo('table-discussion.webp', 'Students seated around a round table in discussion, seen from above', '50% 42%'),
 
   // "Executive positions" section: one large editorial photograph (portrait crop on desktop).
-  positions: photo('positions.jpg', 'Members of the JKUAT French Club leading a club activity', '50% 40%'),
+  positions: null,
 
   // "Application process" section: a tall photographic strip beside the steps.
-  process: photo('process.jpg', 'Students working together during a JKUAT French Club session', '50% 50%'),
+  process: null,
 
   // "Who should apply?" section: a large vertical photograph.
-  requirements: photo('requirements.jpg', 'A JKUAT French Club member taking part in a club event', '50% 35%'),
+  requirements: null,
 
-  // "The French Club experience": four photographs in an asymmetric arrangement.
-  experience: [
-    photo('experience-1.jpg', 'JKUAT French Club members at a club gathering', '50% 45%'),
-    photo('experience-2.jpg', 'Students during a French language activity', '50% 45%'),
-    photo('experience-3.jpg', 'Club members together at a French Club event', '50% 40%'),
-    photo('experience-4.jpg', 'JKUAT French Club members collaborating on a club activity', '50% 45%'),
-  ],
+  // "The French Club experience": three or four photographs in an asymmetric
+  // arrangement. The section is hidden until at least three are supplied.
+  experience: [],
 
   // Final call to action: a strong photograph used behind a dark gradient.
-  cta: photo('cta.jpg', 'JKUAT French Club members together at a club event', '50% 40%'),
+  // Without one, the band uses the club blue.
+  cta: null,
 
   // Application form: a narrow portrait panel shown on wide screens only.
-  apply: photo('apply.jpg', 'A JKUAT French Club member at a club activity', '50% 35%'),
+  apply: photo('conversation.png', 'Two people seated facing each other in conversation', '50% 50%'),
 };
+
+export const SHOW_EXPERIENCE = PHOTOS.experience.filter(Boolean).length >= 3;

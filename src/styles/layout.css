@@ -138,6 +138,11 @@
   .split-media--strip { display: flex; }
   .photo--strip { aspect-ratio: auto; flex: 1; min-height: 420px; }
 }
+/* No photograph supplied for the section: a single-column, text-led layout. */
+@media (min-width: 900px) {
+  .split--solo { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
 /* A gentle scale on hover. Nothing moves on its own. */
 @media (hover: hover) {
   .split-media .photo:hover img, .mosaic-item .photo:hover img { transform: scale(1.025); }

@@ -13,7 +13,7 @@ const STEPS = [
 export default function Process() {
   return (
     <section id="process" className="section section--white" aria-labelledby="process-title">
-      <div className="container split split--text-image split--process">
+      <div className={`container split split--text-image split--process ${PHOTOS.process ? '' : 'split--solo'}`}>
         <div className="split-text">
           <SectionHead id="process-title" index="03" eyebrow="Process" title="Application process" />
           <Reveal as="ol" className="process">
@@ -29,9 +29,11 @@ export default function Process() {
             ))}
           </Reveal>
         </div>
-        <Reveal variant="image" className="split-media split-media--strip" delay={150}>
-          <Photo photo={PHOTOS.process} className="photo--strip" sizes="(min-width: 900px) 34vw, 100vw" />
-        </Reveal>
+        {PHOTOS.process && (
+          <Reveal variant="image" className="split-media split-media--strip" delay={150}>
+            <Photo photo={PHOTOS.process} className="photo--strip" sizes="(min-width: 900px) 34vw, 100vw" />
+          </Reveal>
+        )}
       </div>
     </section>
   );

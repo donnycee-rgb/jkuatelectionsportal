@@ -4,6 +4,7 @@
 .apply-main { min-width: 0; width: 100%; max-width: 820px; margin-inline: auto; }
 @media (min-width: 1180px) {
   .apply-layout { grid-template-columns: minmax(0, 820px) 260px; justify-content: center; gap: var(--space-7); align-items: start; }
+  .apply-layout--solo { grid-template-columns: minmax(0, 820px); }
 }
 .apply-head { margin-bottom: var(--space-5); }
 .apply-head .eyebrow { margin-bottom: var(--space-2); }

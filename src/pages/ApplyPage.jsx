@@ -16,7 +16,7 @@ export default function ApplyPage({ onSubmitted }) {
 
   return (
     <section className="apply-page" aria-labelledby="apply-title">
-      <div className="container apply-layout">
+      <div className={`container apply-layout ${PHOTOS.apply ? '' : 'apply-layout--solo'}`}>
         <div className="apply-main">
           <header className="apply-head">
             <p className="eyebrow">JKUAT French Club &middot; 2026/2027</p>
@@ -36,11 +36,13 @@ export default function ApplyPage({ onSubmitted }) {
         </div>
 
         {/* Decorative on wide screens only; hidden on mobile so the form comes first. */}
-        <aside className="apply-aside" aria-hidden="true">
-          <Photo photo={PHOTOS.apply} className="apply-aside-photo" sizes="300px" />
-          <p className="apply-aside-motto" lang="fr">L'Équipe Gagnante</p>
-          <span className="duo-rule"><i /><i /></span>
-        </aside>
+        {PHOTOS.apply && (
+          <aside className="apply-aside" aria-hidden="true">
+            <Photo photo={PHOTOS.apply} className="apply-aside-photo" sizes="300px" />
+            <p className="apply-aside-motto" lang="fr">L'Équipe Gagnante</p>
+            <span className="duo-rule"><i /><i /></span>
+          </aside>
+        )}
       </div>
     </section>
   );
