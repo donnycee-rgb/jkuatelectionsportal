@@ -35,6 +35,8 @@ export default function App() {
     document.title = isAdmin
       ? 'Electoral desk | JKUAT French Club'
       : 'Executive Leadership Application 2026/2027 | JKUAT French Club';
+    // Keep the private electoral desk out of search results.
+    document.querySelector('meta[name="robots"]')?.setAttribute('content', isAdmin ? 'noindex, nofollow' : 'index, follow');
   }, [isAdmin]);
 
   let page;
