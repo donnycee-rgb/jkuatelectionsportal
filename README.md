@@ -40,6 +40,17 @@ npm run build                # output in dist/
 
 Upload the contents of `dist/` to any static host.
 
+## Link previews and SEO
+
+`index.html` carries the page description, Open Graph and X (Twitter) card tags,
+and schema.org data, so a shared link shows the election title, a short
+description and `public/og-image.png` (1200 x 630).
+
+These tags need the site's full public address. It defaults to
+`https://jkuat-french-club-elections.netlify.app`; if the site moves (for example
+to a custom domain), set `VITE_SITE_URL` in `.env` or in the host's environment
+variables and rebuild. The admin route is marked `noindex`.
+
 ## Project structure
 
 ```
