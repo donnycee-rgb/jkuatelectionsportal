@@ -19,17 +19,29 @@
   --line: #E1E5EC;
   --line-strong: #C9D0DB;
 
-  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Times New Roman', serif;
-  --font-body: 'Figtree', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  /* Theme-aware roles. --white is the surface colour; --on-fill is text that
+     must stay white on blue fills and photographs in both themes. */
+  --blue-fill: #054AAB;
+  --blue-fill-hover: #033A87;
+  --on-fill: #FFFFFF;
+  --error-ink: #7A1411;
+  --error-line: #F3C3C1;
+  --header-bg: rgba(255, 255, 255, 0.97);
+  --status-blue-line: #B7CBEA;
+  --status-green-line: #C3E0B3;
+
+  /* Headings: Cormorant Garamond. Everything else: DM Sans. */
+  --font-display: 'Cormorant Garamond', 'Garamond', 'Times New Roman', serif;
+  --font-body: 'DM Sans', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
 
   /* Type scale (modular, ratio ~1.25) */
   --fs-xs: 0.8125rem;
   --fs-sm: 0.9375rem;
   --fs-md: 1.0625rem;
   --fs-lg: 1.25rem;
-  --fs-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
-  --fs-2xl: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
-  --fs-3xl: clamp(2.5rem, 1.5rem + 4.4vw, 4.75rem);
+  --fs-xl: clamp(1.6rem, 1.3rem + 1.2vw, 2.15rem);
+  --fs-2xl: clamp(2.25rem, 1.6rem + 2.8vw, 3.6rem);
+  --fs-3xl: clamp(2.6rem, 1.8rem + 3vw, 4.25rem);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -50,6 +62,69 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur: 220ms;
 
-  --header-h: 72px;
+  --ink-on-dark: rgba(255, 255, 255, 0.86);
+  --photo-empty: #E9ECF1;
+
+  --header-h: 68px;
   --container: 1160px;
+}
+
+/* Dark theme: follows the system setting unless the visitor picked one
+   with the header toggle (stored as data-theme on <html>). */
+:root { color-scheme: light; }
+:root[data-theme='dark'] {
+  --blue: #7AA9F2;
+  --blue-deep: #A6C6F8;
+  --red-deep: #FF8A84;
+  --green-deep: #9BD47E;
+  --white: #12151A;
+  --soft: #191D23;
+  --blue-tint: rgba(122, 169, 242, 0.12);
+  --red-tint: rgba(234, 53, 47, 0.16);
+  --green-tint: rgba(114, 187, 76, 0.14);
+  --ink: #EEF0F3;
+  --ink-2: #C4C9D2;
+  --ink-3: #9AA1AD;
+  --line: #2A3038;
+  --line-strong: #3D4550;
+  --blue-fill: #0D56C4;
+  --blue-fill-hover: #1A64D4;
+  --error-ink: #FFB4AF;
+  --error-line: rgba(234, 53, 47, 0.5);
+  --header-bg: rgba(18, 21, 26, 0.96);
+  --status-blue-line: rgba(122, 169, 242, 0.4);
+  --status-green-line: rgba(114, 187, 76, 0.4);
+  --photo-empty: #1E232A;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --blue: #7AA9F2;
+    --blue-deep: #A6C6F8;
+    --red-deep: #FF8A84;
+    --green-deep: #9BD47E;
+    --white: #12151A;
+    --soft: #191D23;
+    --blue-tint: rgba(122, 169, 242, 0.12);
+    --red-tint: rgba(234, 53, 47, 0.16);
+    --green-tint: rgba(114, 187, 76, 0.14);
+    --ink: #EEF0F3;
+    --ink-2: #C4C9D2;
+    --ink-3: #9AA1AD;
+    --line: #2A3038;
+    --line-strong: #3D4550;
+    --blue-fill: #0D56C4;
+    --blue-fill-hover: #1A64D4;
+    --error-ink: #FFB4AF;
+    --error-line: rgba(234, 53, 47, 0.5);
+    --header-bg: rgba(18, 21, 26, 0.96);
+    --status-blue-line: rgba(122, 169, 242, 0.4);
+    --status-green-line: rgba(114, 187, 76, 0.4);
+    --photo-empty: #1E232A;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
 }

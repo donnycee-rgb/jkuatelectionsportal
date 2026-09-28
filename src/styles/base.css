@@ -1,6 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
+  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: calc(var(--header-h) + 16px);
@@ -48,19 +49,24 @@ main:focus { outline: none; }
   position: absolute;
   left: 1rem; top: -100px;
   z-index: 100;
-  background: var(--blue);
-  color: var(--white);
+  background: var(--blue-fill);
+  color: var(--on-fill);
   padding: 0.75rem 1rem;
   border-radius: var(--radius);
   font-weight: 600;
   text-decoration: none;
 }
-.skip-link:focus { top: calc(env(safe-area-inset-top, 0px) + 0.75rem); color: var(--white); }
+.skip-link:focus { top: calc(env(safe-area-inset-top, 0px) + 0.75rem); color: var(--on-fill); }
 
 .muted { color: var(--ink-3); }
 
 /* Logo: shown unaltered; multiply blends its white field into light backgrounds. */
 .logo { height: auto; mix-blend-mode: multiply; user-select: none; }
+/* On dark surfaces the logo keeps its own white field, as a small badge. */
+:root[data-theme='dark'] .logo { mix-blend-mode: normal; background: #FFFFFF; border-radius: 8px; padding: 3px; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .logo { mix-blend-mode: normal; background: #FFFFFF; border-radius: 8px; padding: 3px; }
+}
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -90,14 +96,18 @@ main:focus { outline: none; }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
-.btn--primary { --btn-bg: var(--blue); --btn-fg: var(--white); --btn-bd: var(--blue); }
-.btn--primary:hover:not(:disabled) { --btn-bg: var(--blue-deep); --btn-bd: var(--blue-deep); box-shadow: 0 6px 18px -8px rgba(5, 74, 171, 0.55); }
+.btn--primary { --btn-bg: var(--blue-fill); --btn-fg: var(--on-fill); --btn-bd: var(--blue-fill); }
+.btn--primary:hover:not(:disabled) { --btn-bg: var(--blue-fill-hover); --btn-bd: var(--blue-fill-hover); box-shadow: 0 6px 18px -8px rgba(5, 74, 171, 0.55); }
 
 .btn--ghost { --btn-bg: transparent; --btn-fg: var(--blue); --btn-bd: var(--line-strong); }
 .btn--ghost:hover:not(:disabled) { --btn-bd: var(--blue); --btn-bg: var(--blue-tint); }
 
-.btn--light { --btn-bg: var(--white); --btn-fg: var(--blue); --btn-bd: var(--white); }
-.btn--light:hover:not(:disabled) { --btn-bg: var(--blue-tint); }
+/* For use on photographs and blue fills: identical in both themes. */
+.btn--light { --btn-bg: #FFFFFF; --btn-fg: #054AAB; --btn-bd: #FFFFFF; }
+.btn--light:hover:not(:disabled) { --btn-bg: #EEF4FC; }
+.btn--outline-light { --btn-bg: rgba(17, 17, 17, 0.18); --btn-fg: #FFFFFF; --btn-bd: rgba(255, 255, 255, 0.7); }
+.btn--outline-light:hover:not(:disabled) { --btn-bg: rgba(255, 255, 255, 0.14); --btn-bd: #FFFFFF; }
+.btn--light:focus-visible, .btn--outline-light:focus-visible { outline-color: #FFFFFF; }
 
 .btn--text { --btn-bg: transparent; --btn-bd: transparent; --btn-fg: var(--ink-2); }
 .btn--text:hover { --btn-fg: var(--red-deep); }
@@ -145,16 +155,59 @@ main:focus { outline: none; }
 }
 .notice svg { flex: none; margin-top: 2px; }
 .notice--info { border-left-color: var(--blue); background: var(--blue-tint); justify-content: space-between; align-items: center; flex-wrap: wrap; }
-.notice--error { border-left-color: var(--red); background: var(--red-tint); color: #7A1411; }
+.notice--error { border-left-color: var(--red); background: var(--red-tint); color: var(--error-ink); }
 .notice--warn { border-left-color: var(--ink-3); background: var(--soft); color: var(--ink-2); }
 
-/* ---------- Reveal on scroll ---------- */
-.reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 700ms var(--ease-out) var(--reveal-delay, 0ms), transform 700ms var(--ease-out) var(--reveal-delay, 0ms);
+/* ---------- Eyebrow labels ---------- */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
 }
-.reveal.is-visible { opacity: 1; transform: none; }
+.eyebrow--light { color: rgba(255, 255, 255, 0.82); }
+
+/* ---------- Photographs ---------- */
+.photo { position: relative; overflow: hidden; background: var(--photo-empty); }
+.photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 900ms var(--ease-out);
+}
+/* A supplied photograph is missing: a quiet neutral panel keeps the layout. */
+.photo-empty {
+  position: absolute; inset: 0;
+  display: grid; place-items: end start;
+  padding: 0.75rem;
+  background:
+    linear-gradient(135deg, rgba(5, 74, 171, 0.05), transparent 55%),
+    var(--photo-empty);
+}
+.photo-empty-note { font-size: 0.72rem; color: var(--ink-3); font-family: ui-monospace, monospace; }
+.photo-caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 1.5rem 0.9rem 0.7rem;
+  font-size: var(--fs-xs); color: #FFFFFF;
+  background: linear-gradient(transparent, rgba(17, 17, 17, 0.6));
+}
+
+/* ---------- Reveal on scroll ---------- */
+.reveal--rise {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 800ms var(--ease-out) var(--reveal-delay, 0ms), transform 800ms var(--ease-out) var(--reveal-delay, 0ms);
+}
+.reveal--rise.is-visible { opacity: 1; transform: none; }
+
+/* Photographs are unveiled with a soft clip from the bottom edge. */
+.reveal--image {
+  clip-path: inset(12% 0 0 0);
+  opacity: 0;
+  transition: clip-path 1100ms var(--ease-out) var(--reveal-delay, 0ms), opacity 700ms var(--ease) var(--reveal-delay, 0ms);
+}
+.reveal--image.is-visible { clip-path: inset(0 0 0 0); opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -165,7 +218,7 @@ main:focus { outline: none; }
     transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
-  .reveal { opacity: 1; transform: none; }
+  .reveal--rise, .reveal--image { opacity: 1; transform: none; clip-path: none; }
 }
 
 @media print {

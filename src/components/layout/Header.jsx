@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import Logo from '../common/Logo.jsx';
-import { IconMenu, IconClose } from '../common/Icons.jsx';
+import { IconMenu, IconClose, IconSun, IconMoon } from '../common/Icons.jsx';
+import { useTheme } from '../../hooks/useTheme.js';
 import { useNavigate } from '../../hooks/useRoute.js';
 
 const LINKS = [
-  { label: 'The election', section: 'about' },
+  { label: 'The Election', section: 'about' },
   { label: 'Positions', section: 'positions' },
   { label: 'Process', section: 'process' },
   { label: 'Requirements', section: 'requirements' },
@@ -14,6 +15,7 @@ export default function Header({ variant = 'public' }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 8);
@@ -54,8 +56,17 @@ export default function Header({ variant = 'public' }) {
           </span>
         </a>
 
-        {variant === 'public' && (
-          <>
+        <div className="header-tools">
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={toggle}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
+            {theme === 'dark' ? <IconSun /> : <IconMoon />}
+          </button>
+          {variant === 'public' && (
             <button
               type="button"
               className="menu-toggle"
@@ -66,6 +77,11 @@ export default function Header({ variant = 'public' }) {
               {open ? <IconClose /> : <IconMenu />}
               <span className="visually-hidden">{open ? 'Close menu' : 'Open menu'}</span>
             </button>
+          )}
+        </div>
+
+        {variant === 'public' && (
+          <>
 
             <nav id="site-nav" className={`site-nav ${open ? 'is-open' : ''}`} aria-label="Main">
               <ul>

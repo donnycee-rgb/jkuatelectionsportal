@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from '../hooks/useRoute.js';
 import { IconCheck } from '../components/common/Icons.jsx';
+import Logo from '../components/common/Logo.jsx';
 
 const fmt = (iso) => {
   try {
@@ -35,6 +36,13 @@ export default function ConfirmationPage({ receipt }) {
     <section className="confirm-page" aria-labelledby="confirm-title">
       <div className="container container--narrow">
         <div className="confirm-card">
+          <div className="confirm-brand">
+            <Logo size={56} decorative />
+            <span>
+              <span className="confirm-brand-name">JKUAT French Club</span>
+              <span className="confirm-brand-motto" lang="fr">L'Équipe Gagnante</span>
+            </span>
+          </div>
           <div className="confirm-seal" aria-hidden="true">
             <svg viewBox="0 0 120 120">
               <circle className="seal-ring seal-ring--blue" cx="60" cy="60" r="54" />

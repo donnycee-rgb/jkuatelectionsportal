@@ -29,7 +29,7 @@
 button.stat:hover { background: var(--blue-tint); }
 .stat.is-active { background: var(--red-tint); }
 .stat.is-active::after { transform: scaleX(1); }
-.stat--total { background: var(--blue); color: var(--white); cursor: default; grid-column: 1 / -1; }
+.stat--total { background: var(--blue-fill); color: var(--on-fill); cursor: default; grid-column: 1 / -1; }
 @media (min-width: 1200px) { .stat--total { grid-column: auto; } }
 .stat-label { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.02em; color: var(--ink-3); line-height: 1.3; }
 .stat--total .stat-label { color: rgba(255, 255, 255, 0.85); }
@@ -81,9 +81,9 @@ button.stat:hover { background: var(--blue-tint); }
 .status::before { content: ''; width: 7px; height: 7px; background: currentColor; }
 .status--neutral { color: var(--ink-2); }
 .status--neutral::before { border-radius: 50%; background: transparent; border: 1.5px solid currentColor; }
-.status--blue { color: var(--blue); border-color: #B7CBEA; background: var(--blue-tint); }
+.status--blue { color: var(--blue); border-color: var(--status-blue-line); background: var(--blue-tint); }
 .status--blue::before { border-radius: 50%; }
-.status--green { color: var(--green-deep); border-color: #C3E0B3; background: var(--green-tint); }
+.status--green { color: var(--green-deep); border-color: var(--status-green-line); background: var(--green-tint); }
 .status--green::before { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); width: 8px; height: 8px; }
 .status--muted { color: var(--ink-3); background: var(--soft); }
 .status--muted::before { height: 2px; width: 8px; }
@@ -118,3 +118,9 @@ button.stat:hover { background: var(--blue-tint); }
 .detail-row + .detail-row { border-top: 1px dashed var(--line); }
 .detail-row dt { font-size: var(--fs-xs); color: var(--ink-3); font-weight: 600; margin-bottom: 0.2rem; }
 .detail-row dd { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* The electoral desk is an internal tool: DM Sans throughout, no editorial serif. */
+.admin, .admin-login, .drawer { --font-display: var(--font-body); }
+.admin-title { font-weight: 700; font-size: var(--fs-xl); letter-spacing: -0.01em; }
+.login-title, .drawer-title { font-weight: 700; font-size: var(--fs-lg); }
+.stat-value { font-weight: 700; font-size: 2rem; font-variant-numeric: tabular-nums; }
