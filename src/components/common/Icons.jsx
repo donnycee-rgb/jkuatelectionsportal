@@ -16,3 +16,5 @@ export const IconSearch = () => (<svg {...base}><circle cx="11" cy="11" r="6.5" 
 export const IconDownload = () => (<svg {...base}><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14" /></svg>);
 export const IconRefresh = () => (<svg {...base}><path d="M20 11a8 8 0 10-2.3 5.7M20 5v6h-6" /></svg>);
 export const IconLock = () => (<svg {...base}><rect x="5" y="10.5" width="14" height="9.5" rx="1.5" /><path d="M8 10.5V8a4 4 0 118 0v2.5" /></svg>);
+export const IconPause = () => (<svg {...base}><path d="M9 6v12M15 6v12" /></svg>);
+export const IconPlay = () => (<svg {...base}><path d="M8 5.5v13l10.5-6.5z" /></svg>);

@@ -118,3 +118,9 @@ button.stat:hover { background: var(--blue-tint); }
 .detail-row + .detail-row { border-top: 1px dashed var(--line); }
 .detail-row dt { font-size: var(--fs-xs); color: var(--ink-3); font-weight: 600; margin-bottom: 0.2rem; }
 .detail-row dd { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* The electoral desk is an internal tool: DM Sans throughout, no editorial serif. */
+.admin, .admin-login, .drawer { --font-display: var(--font-body); }
+.admin-title { font-weight: 700; font-size: var(--fs-xl); letter-spacing: -0.01em; }
+.login-title, .drawer-title { font-weight: 700; font-size: var(--fs-lg); }
+.stat-value { font-weight: 700; font-size: 2rem; font-variant-numeric: tabular-nums; }

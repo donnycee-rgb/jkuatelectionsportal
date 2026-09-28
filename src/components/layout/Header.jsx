@@ -4,7 +4,7 @@ import { IconMenu, IconClose } from '../common/Icons.jsx';
 import { useNavigate } from '../../hooks/useRoute.js';
 
 const LINKS = [
-  { label: 'The election', section: 'about' },
+  { label: 'The Election', section: 'about' },
   { label: 'Positions', section: 'positions' },
   { label: 'Process', section: 'process' },
   { label: 'Requirements', section: 'requirements' },

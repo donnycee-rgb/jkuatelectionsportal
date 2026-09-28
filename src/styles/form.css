@@ -1,8 +1,22 @@
 /* ---------- Apply page ---------- */
 .apply-page { background: var(--soft); padding-block: var(--space-6) var(--space-8); min-height: 70vh; }
+.apply-layout { display: grid; gap: var(--space-6); }
+.apply-main { min-width: 0; width: 100%; max-width: 820px; margin-inline: auto; }
+@media (min-width: 1180px) {
+  .apply-layout { grid-template-columns: minmax(0, 820px) 260px; justify-content: center; gap: var(--space-7); align-items: start; }
+}
 .apply-head { margin-bottom: var(--space-5); }
-.apply-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-2xl); line-height: 1.1; }
+.apply-head .eyebrow { margin-bottom: var(--space-2); }
+.apply-title { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-2xl); line-height: 1.05; }
 .apply-sub { color: var(--ink-3); margin-top: var(--space-2); font-size: var(--fs-sm); }
+
+/* A narrow editorial photograph beside the form, wide screens only. */
+.apply-aside { display: none; }
+@media (min-width: 1180px) {
+  .apply-aside { display: grid; gap: var(--space-3); position: sticky; top: calc(var(--header-h) + 2rem); margin-top: 6.5rem; }
+  .apply-aside-photo { aspect-ratio: 3 / 4; }
+  .apply-aside-motto { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.25rem; color: var(--red-deep); }
+}
 .apply-head .notice { margin-top: var(--space-4); }
 .apply-shell { display: grid; gap: var(--space-4); }
 
@@ -48,8 +62,8 @@
 @keyframes step-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
 
 .step-head { margin-bottom: var(--space-5); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
-.step-accent { font-family: var(--font-display); font-style: italic; color: var(--red-deep); font-size: var(--fs-md); margin-bottom: 0.15rem; }
-.step-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-xl); line-height: 1.15; }
+.step-accent { font-family: var(--font-display); font-style: italic; font-weight: 500; color: var(--red-deep); font-size: 1.15rem; margin-bottom: 0.15rem; }
+.step-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-xl); line-height: 1.1; }
 .step-intro { color: var(--ink-2); margin-top: var(--space-2); }
 
 .position-context { margin-bottom: var(--space-5); padding: var(--space-3) var(--space-4); background: var(--red-tint); border-left: 3px solid var(--red); }
@@ -145,7 +159,7 @@
 .pos-option { align-items: flex-start; padding: 1rem; }
 .pos-option-mark { margin-top: 3px; }
 .pos-option-body { display: grid; gap: 0.2rem; flex: 1; }
-.pos-option-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-lg); line-height: 1.2; }
+.pos-option-title { font-family: var(--font-display); font-weight: 600; font-size: 1.4rem; line-height: 1.15; }
 .pos-option-desc { font-size: var(--fs-sm); color: var(--ink-2); }
 .pos-option-seat {
   flex: none; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
@@ -173,7 +187,6 @@
 .declaration {
   margin: var(--space-5) 0;
   padding: var(--space-4) var(--space-5);
-  font-family: var(--font-display);
   font-size: var(--fs-md);
   line-height: 1.7;
   color: var(--ink-2);
@@ -248,7 +261,15 @@
 .seal-check svg { width: 38px; height: 38px; stroke-width: 2.2; }
 @keyframes seal-pop { to { opacity: 1; transform: none; } }
 
-.confirm-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-2xl); line-height: 1.1; }
+.confirm-title { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-2xl); line-height: 1.05; }
+.confirm-brand {
+  display: flex; align-items: center; gap: 0.75rem; text-align: left;
+  padding-bottom: var(--space-5); margin-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line); width: 100%; max-width: 30rem; justify-content: center;
+}
+.confirm-brand > span { display: grid; line-height: 1.2; }
+.confirm-brand-name { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; }
+.confirm-brand-motto { font-family: var(--font-display); font-style: italic; font-weight: 500; color: var(--red-deep); }
 .confirm-text { color: var(--ink-2); max-width: 32rem; }
 .receipt { width: 100%; max-width: 30rem; margin-top: var(--space-5); border: 1px solid var(--line); text-align: left; }
 .receipt-row { display: flex; justify-content: space-between; gap: 1rem; padding: var(--space-3) var(--space-4); flex-wrap: wrap; }
@@ -256,6 +277,6 @@
 .receipt-row dt { color: var(--ink-3); font-size: var(--fs-sm); }
 .receipt-row dd { font-weight: 600; }
 .receipt-row--id { background: var(--green-tint); flex-direction: column; gap: 0.2rem; }
-.receipt-row--id dd { font-family: var(--font-display); font-size: var(--fs-xl); color: var(--ink); letter-spacing: 0.02em; }
+.receipt-row--id dd { font-size: var(--fs-xl); font-weight: 700; color: var(--ink); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
 .confirm-note { font-size: var(--fs-sm); color: var(--ink-3); max-width: 30rem; margin-top: var(--space-3); }
 .confirm-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: var(--space-5); }

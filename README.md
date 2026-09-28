@@ -18,6 +18,7 @@ React (static site)  ──POST JSON──▶  Google Apps Script Web App  ─�
 | Google Sheet column structure | `docs/SHEET_COLUMNS.md` |
 | Setup, deployment and connection guide | `docs/SETUP.md` |
 | Official logo (cropped, unaltered) | `public/jfc-logo.png` |
+| Club photographs (add your own, see the guide in the folder) | `public/photos/`, listed in `src/config/photos.js` |
 
 ## Quick start (local)
 
@@ -43,13 +44,13 @@ Upload the contents of `dist/` to any static host.
 
 ```
 src/
-  config/        app.js (public config), positions.js (the six seats), formSchema.js (all questions)
+  config/        app.js (public config), positions.js (the six seats), formSchema.js (all questions), photos.js (every public photograph)
   services/      api.js (Apps Script client), validation.js, csv.js, previewStore.js
   hooks/         useRoute.js (hash router), useReveal.js (scroll reveal)
   components/
     layout/      Header, Footer
-    common/      Logo, Icons (line icons, no emojis), Reveal, SectionHead
-    home/        Hero, SunburstRays, About, Positions, Process, Requirements, ApplyBand
+    common/      Logo, Photo, Icons (line icons, no emojis), Reveal, SectionHead
+    home/        Hero, HeroCarousel, About, Positions, Process, Experience, Requirements, ApplyBand
     form/        ApplicationForm, Field, PositionPicker, Progress, Review
     admin/       AdminLogin, ApplicationDetail, BarList, StatusBadge, columns
   pages/         HomePage, ApplyPage, ConfirmationPage, AdminPage, NotFoundPage

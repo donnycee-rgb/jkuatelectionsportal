@@ -19,17 +19,18 @@
   --line: #E1E5EC;
   --line-strong: #C9D0DB;
 
-  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Times New Roman', serif;
-  --font-body: 'Figtree', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  /* Headings: Cormorant Garamond. Everything else: DM Sans. */
+  --font-display: 'Cormorant Garamond', 'Garamond', 'Times New Roman', serif;
+  --font-body: 'DM Sans', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
 
   /* Type scale (modular, ratio ~1.25) */
   --fs-xs: 0.8125rem;
   --fs-sm: 0.9375rem;
   --fs-md: 1.0625rem;
   --fs-lg: 1.25rem;
-  --fs-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
-  --fs-2xl: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
-  --fs-3xl: clamp(2.5rem, 1.5rem + 4.4vw, 4.75rem);
+  --fs-xl: clamp(1.6rem, 1.3rem + 1.2vw, 2.15rem);
+  --fs-2xl: clamp(2.25rem, 1.6rem + 2.8vw, 3.6rem);
+  --fs-3xl: clamp(2.6rem, 1.8rem + 3vw, 4.25rem);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -50,6 +51,9 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur: 220ms;
 
-  --header-h: 72px;
+  --ink-on-dark: rgba(255, 255, 255, 0.86);
+  --photo-empty: #E9ECF1;
+
+  --header-h: 68px;
   --container: 1160px;
 }
