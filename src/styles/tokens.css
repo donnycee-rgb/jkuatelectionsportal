@@ -1,0 +1,55 @@
+/* Design tokens. Colours are taken from the official club logo. */
+:root {
+  --blue: #054AAB;
+  --blue-deep: #033A87;
+  --red: #EA352F;
+  --red-deep: #C4231E;       /* AA-contrast red for text on white */
+  --green: #72BB4C;
+  --green-deep: #3F7A22;     /* AA-contrast green for text */
+  --black: #111111;
+  --white: #FFFFFF;
+  --soft: #F7F8FA;
+  --blue-tint: #EEF4FC;
+  --red-tint: #FDF0EF;
+  --green-tint: #EFF7EA;
+
+  --ink: var(--black);
+  --ink-2: #3D4452;
+  --ink-3: #5F6675;
+  --line: #E1E5EC;
+  --line-strong: #C9D0DB;
+
+  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Times New Roman', serif;
+  --font-body: 'Figtree', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+
+  /* Type scale (modular, ratio ~1.25) */
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --fs-2xl: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --fs-3xl: clamp(2.5rem, 1.5rem + 4.4vw, 4.75rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 6.5rem;
+
+  --radius-sm: 4px;
+  --radius: 6px;
+  --shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.05);
+  --shadow: 0 1px 2px rgba(17, 17, 17, 0.04), 0 8px 24px -12px rgba(5, 74, 171, 0.18);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 220ms;
+
+  --header-h: 72px;
+  --container: 1160px;
+}
