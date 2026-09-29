@@ -77,3 +77,7 @@ export const STATUSES = [
   'ELECTED',
   'NOT ELECTED',
 ];
+
+// Statuses that email the applicant when set from the dashboard (must match
+// EMAIL_STATUSES in apps-script/Code.gs). "UNDER REVIEW" sends nothing.
+export const EMAIL_STATUSES = ['SUBMITTED', 'SHORTLISTED', 'NOT SHORTLISTED', 'INTERVIEW', 'ELECTED', 'NOT ELECTED'];

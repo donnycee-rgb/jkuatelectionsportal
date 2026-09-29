@@ -38,6 +38,9 @@ You do not need to type headers. `setup()` creates them in step 3.
 | `SHEET_NAME` | `Applications` |
 | `ADMIN_KEY` | A long random passphrase, at least 20 characters. Share it only with the electoral team. |
 | `ID_YEAR` | `2026` (optional; used in reference numbers) |
+| `MAIL_REPLY_TO` | The club's own email address. Applicants' replies go here (see "Applicant emails") |
+| `MAIL_SENDER_NAME` | `JKUAT French Club` (optional; this is the default) |
+| `MAIL_ENABLED` | Optional. Set to `false` to stop all applicant emails |
 
 These values never leave Google's servers. They are not in the frontend code.
 
@@ -46,10 +49,11 @@ These values never leave Google's servers. They are not in the frontend code.
 ## 3. Initialise the sheet
 
 1. In the editor toolbar choose the function **`setup`** and click **Run**.
-2. Approve the permission prompt (the script needs access to your spreadsheets).
+2. Approve the permission prompt (the script needs access to your spreadsheets and
+   permission to **send email as you**, for applicant emails).
    If you see "Google hasn't verified this app", choose **Advanced > Go to project**.
    This is normal for your own scripts.
-3. Open the sheet. The `Applications` tab should now have 34 blue header cells, a frozen
+3. Open the sheet. The `Applications` tab should now have 36 blue header cells, a frozen
    header row and a status dropdown in column AG.
 
 ---
@@ -106,6 +110,43 @@ The URL is compiled into the build, so run `npm run build` again whenever it cha
 
 ---
 
+## Applicant emails
+
+Applicants are emailed automatically:
+
+| When | Email |
+|---|---|
+| They submit an application | Confirmation with their reference number |
+| Status set to Shortlisted, Not shortlisted, Interview, Elected or Not elected **from the dashboard** | A short, neutral update for that status |
+| Status set to Under review | Nothing |
+
+- The emails never include internal notes, dates or venues. They say the club will
+  share details separately.
+- In the dashboard, **Email the applicant about this change** (ticked by default) lets
+  you change a status quietly, for example to correct a mistake.
+- Each status is emailed at most once per applicant. The sheet records it in
+  **Last Emailed Status** and **Last Emailed At**, and the side panel shows it.
+- If an email cannot be sent, the status is still saved and the panel says why. Use
+  **Send email now** to retry later.
+- Editing the status **directly in the Google Sheet does not send email**. Use the
+  dashboard when the applicant should be told.
+
+**Sender.** Emails are sent by the Google account that deployed the script, with
+`MAIL_SENDER_NAME` (default "JKUAT French Club") as the display name. Replies go to
+`MAIL_REPLY_TO`. To make the club's own address appear as the sender too, create and
+deploy the Apps Script from the club's Google account.
+
+**Daily limit.** About 100 emails a day on a personal Gmail account, about 1,500 on
+Google Workspace. The dashboard shows how many are left today.
+
+**Try it first.** In the Apps Script editor, run **`sendTestEmails`**. It sends one
+example of every email to the account running the script. No applicant is emailed.
+
+**After updating `Code.gs`,** publish a new version of the deployment (step 4,
+"Updating the backend later") and approve the new "send email" permission when asked.
+
+---
+
 ## 6. Host the site
 
 `dist/` is a plain static site with relative paths, so it works at a domain root or in a
@@ -150,11 +191,11 @@ No server rewrites are needed because the app uses hash routes (`#/apply`).
 | Search | Name, registration number or reference number |
 | Filter | Position and status dropdowns |
 | Review | **View** opens the full application in a side panel |
-| Decide | Change the status and add internal notes, then **Save changes** |
+| Decide | Change the status and add internal notes, then **Save changes**. The applicant is emailed unless you untick the box |
 | Export | **Export CSV** downloads every column, including notes |
 
 The team can also work directly in the Google Sheet. Status cells have a dropdown with
-the permitted values.
+the permitted values. Changes made there do not email the applicant.
 
 ---
 
@@ -182,6 +223,8 @@ the permitted values.
 
 | Symptom | Fix |
 |---|---|
+| Dashboard shows applications but the sheet is empty, or the admin login says "Preview mode" | The site was built without `VITE_APPS_SCRIPT_URL`, so it runs in preview mode and stores submissions only in each visitor's own browser. Add the variable in your host's settings (Netlify: Site configuration > Environment variables) and redeploy. |
+| Applicants do not receive emails | Run `sendTestEmails` in the editor. Check spam folders, `MAIL_ENABLED`, and that a new version was deployed after updating `Code.gs`. |
 | "Could not reach the application server" | Check `VITE_APPS_SCRIPT_URL` ends in `/exec`, that access is **Anyone**, and rebuild. |
 | Submissions work but nothing appears in the sheet | `SPREADSHEET_ID` is wrong, or the sheet belongs to a different account from the one that deployed. |
 | "The admin key has not been configured" | Add `ADMIN_KEY` (12+ characters) in Script Properties. |

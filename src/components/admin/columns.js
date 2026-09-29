@@ -34,6 +34,8 @@ export const SHEET_COLUMNS = [
   { key: 'declaration', label: 'Declaration' },
   { key: 'status', label: 'Application Status' },
   { key: 'adminNotes', label: 'Admin Notes' },
+  { key: 'lastEmailedStatus', label: 'Last Emailed Status' },
+  { key: 'lastEmailedAt', label: 'Last Emailed At' },
 ];
 
 export const DETAIL_GROUPS = [

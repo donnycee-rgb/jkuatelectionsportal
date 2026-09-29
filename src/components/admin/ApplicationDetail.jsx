@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { STATUSES, getPosition } from '../../config/positions.js';
+import { STATUSES, EMAIL_STATUSES, getPosition } from '../../config/positions.js';
 import { DETAIL_GROUPS, labelFor } from './columns.js';
 import { IconClose } from '../common/Icons.jsx';
 import StatusBadge, { titleCase } from './StatusBadge.jsx';
@@ -13,6 +13,7 @@ export default function ApplicationDetail({ application, loading, error, onClose
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState('');
+  const [notify, setNotify] = useState(true);
   const closeRef = useRef(null);
 
   // Initialise the editor once per application (not after every save).
@@ -22,6 +23,7 @@ export default function ApplicationDetail({ application, loading, error, onClose
       setStatus(application.status || 'SUBMITTED');
       setNotes(application.adminNotes || '');
       setSaved('');
+      setNotify(true);
     }
   }, [appId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -33,12 +35,21 @@ export default function ApplicationDetail({ application, loading, error, onClose
     return () => { document.removeEventListener('keydown', onKey); document.body.classList.remove('no-scroll'); };
   }, [onClose]);
 
-  const save = async () => {
+  const describe = (email) => {
+    if (!email) return '';
+    if (email.sent) return email.preview ? 'Applicant would be emailed (preview mode: nothing sent).' : 'Applicant emailed.';
+    if (email.error) return email.error;
+    if (email.skipped === 'ALREADY_SENT') return 'The applicant was already emailed about this status.';
+    if (email.skipped === 'DISABLED') return 'Applicant emails are turned off.';
+    return '';
+  };
+
+  const run = async (changes, okText) => {
     setSaving(true);
     setSaved('');
     try {
-      await onSave({ status, adminNotes: notes });
-      setSaved('Changes saved.');
+      const res = await onSave(changes);
+      setSaved([okText, describe(res?.email)].filter(Boolean).join(' '));
     } catch (e) {
       setSaved(e.message || 'Changes could not be saved.');
     } finally {
@@ -46,8 +57,16 @@ export default function ApplicationDetail({ application, loading, error, onClose
     }
   };
 
+  const save = () => run({ status, adminNotes: notes, notify }, 'Changes saved.');
+  const sendNow = () => run({ sendEmail: true }, '');
+
   const pos = application && getPosition(application.position);
-  const dirty = application && (status !== (application.status || 'SUBMITTED') || notes !== (application.adminNotes || ''));
+  const current = application?.status || 'SUBMITTED';
+  const dirty = application && (status !== current || notes !== (application.adminNotes || ''));
+  const statusChanging = application && status !== current;
+  const willEmail = statusChanging && EMAIL_STATUSES.includes(status) && application.lastEmailedStatus !== status;
+  // The current status could have been emailed but was not (e.g. the daily limit was reached).
+  const owed = application && !statusChanging && EMAIL_STATUSES.includes(current) && application.lastEmailedStatus !== current;
 
   return (
     <div className="drawer-wrap">
@@ -83,6 +102,29 @@ export default function ApplicationDetail({ application, loading, error, onClose
                     </select>
                   </div>
                 </div>
+                <div className="review-panel-row">
+                  <span>Applicant last emailed</span>
+                  <span className="mail-last">
+                    {application.lastEmailedStatus
+                      ? `${titleCase(application.lastEmailedStatus)}${application.lastEmailedAt ? `, ${fmt(application.lastEmailedAt)}` : ''}`
+                      : 'Not yet'}
+                  </span>
+                </div>
+                {statusChanging && (
+                  willEmail ? (
+                    <label className={`check check--compact ${notify ? 'is-selected' : ''}`}>
+                      <input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
+                      <span className="check-box" aria-hidden="true" />
+                      <span className="check-text">Email the applicant about this change</span>
+                    </label>
+                  ) : (
+                    <p className="field-hint">
+                      {EMAIL_STATUSES.includes(status)
+                        ? 'The applicant was already emailed about this status, so no email will be sent.'
+                        : `No email is sent for ${titleCase(status)}.`}
+                    </p>
+                  )
+                )}
                 <div className="field">
                   <label className="field-label" htmlFor="adm-notes">Internal notes</label>
                   <textarea id="adm-notes" rows={4} maxLength={2000} value={notes} onChange={(e) => setNotes(e.target.value)} />
@@ -92,6 +134,11 @@ export default function ApplicationDetail({ application, loading, error, onClose
                   <button type="button" className="btn btn--primary" onClick={save} disabled={saving || !dirty} aria-busy={saving}>
                     {saving ? 'Saving' : 'Save changes'}
                   </button>
+                  {owed && !dirty && (
+                    <button type="button" className="btn btn--ghost" onClick={sendNow} disabled={saving}>
+                      Send email now
+                    </button>
+                  )}
                   <p className="save-msg" role="status">{saved}</p>
                 </div>
               </section>

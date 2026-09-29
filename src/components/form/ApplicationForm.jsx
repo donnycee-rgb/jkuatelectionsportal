@@ -144,7 +144,7 @@ export default function ApplicationForm({ initialPosition, onSubmitted }) {
     try {
       const res = await submitApplication(payload);
       try { localStorage.removeItem(APP_CONFIG.draftKey); } catch { /* ignore */ }
-      onSubmitted({ applicationId: res.applicationId, timestamp: res.timestamp, position: res.position || payload.position, name: payload.fullName });
+      onSubmitted({ applicationId: res.applicationId, timestamp: res.timestamp, position: res.position || payload.position, name: payload.fullName, emailSent: res.emailSent === true });
     } catch (err) {
       setServerError(err.message || 'Your application could not be submitted. Try again.');
     } finally {
