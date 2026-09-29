@@ -10,6 +10,13 @@
  *   ADMIN_KEY        Long random passphrase for the electoral desk (20+ characters)
  *   ID_YEAR          Optional. Year used in reference numbers. Defaults to 2026.
  *
+ * Applicant emails (optional; see docs/SETUP.md, "Applicant emails")
+ *   MAIL_ENABLED     "false" turns all applicant emails off. Default: on.
+ *   MAIL_SENDER_NAME Name shown as the sender. Default: "JKUAT French Club".
+ *   MAIL_REPLY_TO    The club's own address; applicants' replies go here.
+ *   Emails are sent by the Google account that deploys this script. To show
+ *   the club's own address as the sender, deploy from the club's account.
+ *
  * Run setup() once from the editor after setting the properties.
  */
 
@@ -87,7 +94,9 @@ var COLUMNS = [
   ['Leadership Commitment', 'leadershipCommitment'],
   ['Declaration', 'declaration'],
   ['Application Status', 'status'],
-  ['Admin Notes', 'adminNotes']
+  ['Admin Notes', 'adminNotes'],
+  ['Last Emailed Status', 'lastEmailedStatus'],
+  ['Last Emailed At', 'lastEmailedAt']
 ];
 
 var SUMMARY_KEYS = ['applicationId', 'timestamp', 'fullName', 'registrationNumber', 'course', 'year', 'position', 'status'];
@@ -235,16 +244,22 @@ function handleSubmit_(raw) {
     });
     sheet.appendRow(row);
     SpreadsheetApp.flush();
-
-    return json_({
-      ok: true,
-      applicationId: data.applicationId,
-      timestamp: now.toISOString(),
-      position: data.position
-    });
+    var rowNumber = sheet.getLastRow();
   } finally {
     lock.releaseLock();
   }
+
+  // Confirmation email, sent outside the lock. A failed email never undoes
+  // a recorded application.
+  var email = notifyApplicant_(sheet, rowNumber, data, 'SUBMITTED');
+
+  return json_({
+    ok: true,
+    applicationId: data.applicationId,
+    timestamp: now.toISOString(),
+    position: data.position,
+    emailSent: email.sent
+  });
 }
 
 function nextId_() {
@@ -296,6 +311,7 @@ function adminList_() {
   var rows = readAll_();
   return json_({
     ok: true,
+    mail: mailStatus_(),
     applications: rows.map(function (r) {
       var o = {};
       SUMMARY_KEYS.forEach(function (k) { o[k] = r[k]; });
@@ -317,19 +333,33 @@ function adminUpdate_(body) {
     var found = findRow_(String(body.id || ''));
     if (!found) return fail_('Application not found.', 'NOT_FOUND');
     var sheet = getSheet_();
+    var previous = found.record.status;
+    var changed = false;
 
     if (body.status !== undefined) {
       var status = String(body.status).toUpperCase();
       if (STATUSES.indexOf(status) === -1) return fail_('Invalid status.', 'VALIDATION');
       sheet.getRange(found.rowNumber, colIndex_('status')).setValue(status);
       found.record.status = status;
+      changed = status !== previous;
     }
     if (body.adminNotes !== undefined) {
       var notes = clean_(body.adminNotes, true).slice(0, LONG_MAX);
       sheet.getRange(found.rowNumber, colIndex_('adminNotes')).setValue(guard_(notes));
       found.record.adminNotes = notes;
     }
-    return json_({ ok: true, application: found.record });
+
+    // Email only on a real status change, only when the admin asked for it
+    // (body.notify, on by default), and never twice for the same status.
+    // body.sendEmail retries the email for the current status (for example
+    // after the daily limit was reached); it is still sent at most once.
+    var email = { sent: false, skipped: 'NO_CHANGE' };
+    if (changed || body.sendEmail === true) {
+      email = body.notify === false
+        ? { sent: false, skipped: 'NOT_REQUESTED' }
+        : notifyApplicant_(sheet, found.rowNumber, found.record, found.record.status);
+    }
+    return json_({ ok: true, application: found.record, email: email, mail: mailStatus_() });
   } finally {
     lock.releaseLock();
   }
@@ -352,8 +382,26 @@ function getSheet_() {
   if (!sheet) {
     sheet = ss.insertSheet(name);
     writeHeaders_(sheet);
+  } else {
+    ensureColumns_(sheet);
   }
   return sheet;
+}
+
+// Sheets created before a column was added get the new columns and headers,
+// so reads and writes never go past the sheet's last column.
+function ensureColumns_(sheet) {
+  var have = sheet.getMaxColumns();
+  if (have < COLUMNS.length) sheet.insertColumnsAfter(have, COLUMNS.length - have);
+  var lastHeader = sheet.getRange(1, COLUMNS.length).getValue();
+  if (lastHeader !== COLUMNS[COLUMNS.length - 1][0]) {
+    for (var i = 0; i < COLUMNS.length; i++) {
+      var cell = sheet.getRange(1, i + 1);
+      if (!cell.getValue()) {
+        cell.setValue(COLUMNS[i][0]).setFontWeight('bold').setBackground('#054AAB').setFontColor('#FFFFFF').setWrap(true);
+      }
+    }
+  }
 }
 
 function colIndex_(key) {
@@ -476,4 +524,179 @@ function writeHeaders_(sheet) {
   if (last >= 2 && !PROPS.getProperty('ID_SEQ')) {
     PROPS.setProperty('ID_SEQ', String(last - 1));
   }
+}
+
+// ------------------------------------------------------------------
+// Applicant emails
+// ------------------------------------------------------------------
+
+var TERM = '2026/2027';
+
+// Statuses that email the applicant. "UNDER REVIEW" deliberately sends nothing.
+var EMAIL_STATUSES = ['SUBMITTED', 'SHORTLISTED', 'NOT SHORTLISTED', 'INTERVIEW', 'ELECTED', 'NOT ELECTED'];
+
+// Wording for each status. Deliberately free of dates, venues or promises:
+// the club shares those details separately.
+function emailContent_(status, a) {
+  var position = a.position;
+  switch (status) {
+    case 'SUBMITTED':
+      return {
+        subject: 'Application received: ' + position + ' (' + a.applicationId + ')',
+        heading: 'Application received',
+        paragraphs: [
+          'Thank you for applying for the position of ' + position + ' in the JKUAT French Club executive leadership for ' + TERM + '. Your application has been successfully recorded.',
+          'Keep your reference number for any communication about your application. Eligible candidates will be informed about subsequent stages.'
+        ]
+      };
+    case 'SHORTLISTED':
+      return {
+        subject: 'You have been shortlisted: ' + position + ' (' + a.applicationId + ')',
+        heading: 'You have been shortlisted',
+        paragraphs: [
+          'Congratulations. Your application for the position of ' + position + ' has been reviewed and you have been shortlisted.',
+          'The club will contact you with the next steps in the election process.'
+        ]
+      };
+    case 'NOT SHORTLISTED':
+      return {
+        subject: 'Update on your application: ' + position + ' (' + a.applicationId + ')',
+        heading: 'Update on your application',
+        paragraphs: [
+          'Thank you for applying for the position of ' + position + '. After review, your application has not been shortlisted for this election.',
+          'We appreciate your interest in serving the club and hope you will stay active in French Club activities.'
+        ]
+      };
+    case 'INTERVIEW':
+      return {
+        subject: 'Interview invitation: ' + position + ' (' + a.applicationId + ')',
+        heading: 'You are invited to an interview',
+        paragraphs: [
+          'Your application for the position of ' + position + ' has progressed to the interview stage.',
+          'The club will contact you with the interview details. If you have questions in the meantime, reply to this email.'
+        ]
+      };
+    case 'ELECTED':
+      return {
+        subject: 'Congratulations: elected ' + position,
+        heading: 'Congratulations',
+        paragraphs: [
+          'You have been elected as ' + position + ' of the JKUAT French Club for ' + TERM + '.',
+          'Thank you for your commitment to the club. The club will contact you about the handover and your responsibilities.'
+        ]
+      };
+    case 'NOT ELECTED':
+      return {
+        subject: 'Election result: ' + position,
+        heading: 'Thank you for standing',
+        paragraphs: [
+          'Thank you for standing for the position of ' + position + '. On this occasion you were not elected.',
+          'Your willingness to serve is valued, and we hope you will stay active in French Club activities.'
+        ]
+      };
+  }
+  return null;
+}
+
+// Sends the email for `status` and records it on the row. Returns
+// { sent: true } or { sent: false, skipped | error }. Never throws.
+function notifyApplicant_(sheet, rowNumber, record, status) {
+  try {
+    if (String(cfg_('MAIL_ENABLED', 'true')).toLowerCase() === 'false') return { sent: false, skipped: 'DISABLED' };
+    if (EMAIL_STATUSES.indexOf(status) === -1) return { sent: false, skipped: 'NOT_EMAILED_STATUS' };
+    if (record.lastEmailedStatus === status) return { sent: false, skipped: 'ALREADY_SENT' };
+    if (!record.email || !RE_EMAIL.test(record.email)) return { sent: false, error: 'The application has no valid email address.' };
+    if (MailApp.getRemainingDailyQuota() < 1) return { sent: false, error: 'The daily email limit has been reached. Try again tomorrow.' };
+
+    var content = emailContent_(status, record);
+    var message = buildEmail_(content, record);
+    var options = {
+      name: cfg_('MAIL_SENDER_NAME', 'JKUAT French Club'),
+      htmlBody: message.html
+    };
+    var replyTo = cfg_('MAIL_REPLY_TO', '');
+    if (replyTo) options.replyTo = replyTo;
+    MailApp.sendEmail(record.email, content.subject, message.text, options);
+
+    var at = new Date();
+    sheet.getRange(rowNumber, colIndex_('lastEmailedStatus')).setValue(status);
+    sheet.getRange(rowNumber, colIndex_('lastEmailedAt')).setValue(Utilities.formatDate(at, 'Africa/Nairobi', 'yyyy-MM-dd HH:mm'));
+    record.lastEmailedStatus = status;
+    record.lastEmailedAt = at.toISOString();
+    return { sent: true };
+  } catch (err) {
+    console.error('Email to applicant failed: ' + err);
+    return { sent: false, error: 'The email could not be sent: ' + String(err.message || err) };
+  }
+}
+
+function mailStatus_() {
+  var enabled = String(cfg_('MAIL_ENABLED', 'true')).toLowerCase() !== 'false';
+  var quota = null;
+  try { quota = MailApp.getRemainingDailyQuota(); } catch (e) { /* not yet authorised */ }
+  return { enabled: enabled, remainingToday: quota };
+}
+
+function esc_(s) {
+  return String(s === null || s === undefined ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Plain-text and HTML versions of one email. Inline styles only, because
+// email clients ignore stylesheets.
+function buildEmail_(content, a) {
+  var firstName = String(a.fullName || '').split(/\s+/)[0] || 'Candidate';
+  var details = [
+    ['Reference number', a.applicationId],
+    ['Position', a.position]
+  ];
+
+  var text = ['Dear ' + firstName + ',', ''].concat(content.paragraphs.reduce(function (acc, p) { return acc.concat([p, '']); }, []));
+  details.forEach(function (d) { text.push(d[0] + ': ' + d[1]); });
+  text.push('', 'JKUAT French Club', "L'Équipe Gagnante", 'Executive Leadership Application ' + TERM);
+
+  var rows = details.map(function (d) {
+    return '<tr><td style="padding:8px 0;color:#5F6675;font-size:13px;">' + esc_(d[0]) + '</td>' +
+      '<td style="padding:8px 0;font-weight:600;text-align:right;font-size:14px;">' + esc_(d[1]) + '</td></tr>';
+  }).join('');
+
+  var html =
+    '<div style="background:#F7F8FA;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#111111;">' +
+      '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E1E5EC;">' +
+        '<div style="height:4px;background:#054AAB;border-right:120px solid #EA352F;"></div>' +
+        '<div style="padding:28px 28px 8px;">' +
+          '<p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#3D4452;font-weight:bold;">JKUAT French Club</p>' +
+          '<p style="margin:4px 0 0;font-family:Georgia,serif;font-style:italic;color:#C4231E;">L\'Équipe Gagnante</p>' +
+          '<h1 style="margin:22px 0 0;font-family:Georgia,serif;font-weight:normal;font-size:26px;line-height:1.2;">' + esc_(content.heading) + '</h1>' +
+        '</div>' +
+        '<div style="padding:8px 28px 4px;font-size:15px;line-height:1.6;color:#3D4452;">' +
+          '<p>Dear ' + esc_(firstName) + ',</p>' +
+          content.paragraphs.map(function (p) { return '<p>' + esc_(p) + '</p>'; }).join('') +
+        '</div>' +
+        '<div style="padding:0 28px;">' +
+          '<table role="presentation" width="100%" style="border-collapse:collapse;border-top:1px solid #E1E5EC;border-bottom:1px solid #E1E5EC;">' + rows + '</table>' +
+        '</div>' +
+        '<p style="padding:20px 28px 28px;margin:0;font-size:12px;color:#5F6675;line-height:1.5;">' +
+          'Executive Leadership Application ' + TERM + '. You are receiving this email because you applied through the JKUAT French Club application portal.' +
+        '</p>' +
+      '</div>' +
+    '</div>';
+
+  return { text: text.join('\n'), html: html };
+}
+
+// Run from the Apps Script editor to see every email in your own inbox
+// (the account running the script). No applicant is emailed.
+function sendTestEmails() {
+  var me = Session.getEffectiveUser().getEmail();
+  var sample = { fullName: 'Test Candidate', applicationId: 'JFC-2026-0000', position: 'Secretary', email: me };
+  EMAIL_STATUSES.forEach(function (status) {
+    var content = emailContent_(status, sample);
+    var message = buildEmail_(content, sample);
+    var options = { name: cfg_('MAIL_SENDER_NAME', 'JKUAT French Club'), htmlBody: message.html };
+    var replyTo = cfg_('MAIL_REPLY_TO', '');
+    if (replyTo) options.replyTo = replyTo;
+    MailApp.sendEmail(me, '[TEST] ' + content.subject, message.text, options);
+  });
+  Logger.log('Sent %s test emails to %s.', EMAIL_STATUSES.length, me);
 }

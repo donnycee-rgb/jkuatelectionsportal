@@ -280,4 +280,5 @@
 .receipt-row--id { background: var(--green-tint); flex-direction: column; gap: 0.2rem; }
 .receipt-row--id dd { font-size: var(--fs-xl); font-weight: 700; color: var(--ink); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
 .confirm-note { font-size: var(--fs-sm); color: var(--ink-3); max-width: 30rem; margin-top: var(--space-3); }
+.confirm-note--email { color: var(--ink-2); padding: var(--space-3) var(--space-4); background: var(--blue-tint); border-left: 3px solid var(--blue); text-align: left; }
 .confirm-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: var(--space-5); }

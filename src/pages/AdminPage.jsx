@@ -28,6 +28,7 @@ export default function AdminPage() {
   const [openId, setOpenId] = useState(null);
   const [detail, setDetail] = useState({ app: null, loading: false, error: '' });
   const [exporting, setExporting] = useState(false);
+  const [mail, setMail] = useState(null);
 
   const load = useCallback(async (k) => {
     setLoading(true);
@@ -35,6 +36,7 @@ export default function AdminPage() {
     try {
       const res = await adminList(k);
       setRows(res.applications || []);
+      setMail(res.mail || null);
       setKey(k);
       try { sessionStorage.setItem(KEY_STORE, k); } catch { /* ignore */ }
     } catch (e) {
@@ -72,6 +74,8 @@ export default function AdminPage() {
     const res = await adminUpdate(key, openId, changes);
     setDetail((d) => ({ ...d, app: { ...d.app, ...res.application } }));
     setRows((rs) => rs.map((r) => (r.applicationId === openId ? { ...r, status: res.application.status } : r)));
+    if (res.mail) setMail(res.mail);
+    return res;
   };
 
   const exportCsv = async () => {
@@ -111,6 +115,17 @@ export default function AdminPage() {
           <div>
             <h1 className="admin-title">Applications</h1>
             <p className="admin-sub">Executive leadership 2026/2027. Personal contact details are shown only inside each application.</p>
+            {mail && (
+              <p className="admin-sub admin-mail">
+                {!mail.enabled
+                  ? 'Applicant emails are turned off (MAIL_ENABLED).'
+                  : mail.preview
+                    ? 'Applicant emails: preview mode, nothing is actually sent.'
+                    : typeof mail.remainingToday === 'number'
+                      ? `Applicant emails on. ${mail.remainingToday} left today.`
+                      : 'Applicant emails on.'}
+              </p>
+            )}
           </div>
           <div className="admin-actions">
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => load(key)} disabled={loading} aria-busy={loading}>

@@ -70,6 +70,13 @@ export default function ConfirmationPage({ receipt }) {
             </div>
           </dl>
 
+          {receipt.emailSent && (
+            <p className="confirm-note confirm-note--email">
+              A confirmation email with these details has been sent to the address you provided. If you cannot find
+              it, check your spam or promotions folder.
+            </p>
+          )}
+
           <p className="confirm-note">
             Keep your reference number for any communication about your application. Eligible candidates will be
             informed about subsequent stages.
